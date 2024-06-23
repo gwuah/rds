@@ -1,0 +1,39 @@
+syntax = "proto3";
+package proto.v1;
+import "google/protobuf/struct.proto";
+
+message CreateDeploymentRequest {
+  string token = 1;
+  repeated google.protobuf.Struct configs = 2;
+  int64 app_id = 3;
+  string correlation_id = 4;
+}
+
+message CreateDeploymentResponse {
+    string id = 1;
+}
+
+message GetDeploymentRequest {
+    string id = 1;
+}
+  
+message GetDeploymentResponse {
+    string status = 1;
+    string created_at = 2;
+    string updated_at = 3;
+    repeated string events = 4;
+}
+
+message StopDeploymentRequest {
+    string id = 1;
+}
+  
+message StopDeploymentResponse {
+    string id = 1;
+}
+
+service DeploymentService {
+  rpc CreateDeployment(CreateDeploymentRequest) returns (CreateDeploymentResponse) {}
+  rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {}
+  rpc StopDeployment(StopDeploymentRequest) returns (StopDeploymentResponse) {}
+}
