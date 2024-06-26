@@ -1,4 +1,4 @@
-package breaker
+package circuit_breaker
 
 import (
 	"context"
@@ -20,20 +20,20 @@ type Hook interface {
 	After(ctx context.Context, args HookInput) (*HookOutput, error)
 }
 
-// Breaker provides a custom transport that allows programmatic simulation of api failures
-type Breaker struct {
+// CircuitBreaker provides a custom transport that allows programmatic simulation of api failures
+type CircuitBreaker struct {
 	rt   http.RoundTripper
 	hook Hook
 }
 
-func New(rt http.RoundTripper, hook Hook) *Breaker {
-	return &Breaker{
+func New(rt http.RoundTripper, hook Hook) *CircuitBreaker {
+	return &CircuitBreaker{
 		rt:   rt,
 		hook: hook,
 	}
 }
 
-func (b *Breaker) RoundTrip(req *http.Request) (*http.Response, error) {
+func (b *CircuitBreaker) RoundTrip(req *http.Request) (*http.Response, error) {
 	if b.rt == nil {
 		b.rt = http.DefaultTransport
 	}
