@@ -17,14 +17,18 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/gwuah/rds/api/gen/proto/v1/protov1connect"
 	"github.com/gwuah/rds/internal/cli"
 	"github.com/gwuah/rds/internal/config"
+	"github.com/gwuah/rds/internal/db"
+	"github.com/gwuah/rds/internal/manager"
 )
 
 var (
 	rootCmd    *cobra.Command
 	flagSet    = flag.NewFlagSet("fly-rds", flag.ContinueOnError)
 	configFile = flagSet.String("c", "", "Path to config file")
+	dbPath     = flagSet.String("db", "rds.db", "Path to sqlite db")
 )
 
 func init() {
@@ -42,7 +46,7 @@ func init() {
 	}
 }
 
-func initLogging() logrus.FieldLogger {
+func initLogging() *logrus.Logger {
 	logger := logrus.New()
 	level, err := logrus.ParseLevel(os.Getenv("LOG_LEVEL"))
 	if err != nil {
@@ -76,6 +80,11 @@ func main() {
 		}
 	}
 
+	db, err := db.New(*dbPath)
+	if err != nil {
+		logger.WithError(err).Fatal("failed to setup db connection")
+	}
+
 	doneCh := make(chan os.Signal, 1)
 	signal.Notify(doneCh, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 
@@ -90,6 +99,10 @@ func main() {
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("okk"))
 	}))
+
+	mux.Handle(protov1connect.NewManagerServiceHandler(
+		manager.New(logger, db),
+	))
 
 	server := &http.Server{
 		Handler: h2c.NewHandler(mux, &http2.Server{}),

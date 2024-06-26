@@ -32,7 +32,7 @@ message StopDeploymentResponse {
     string id = 1;
 }
 
-service DeploymentService {
+service ManagerService {
   rpc CreateDeployment(CreateDeploymentRequest) returns (CreateDeploymentResponse) {}
   rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse) {}
   rpc StopDeployment(StopDeploymentRequest) returns (StopDeploymentResponse) {}

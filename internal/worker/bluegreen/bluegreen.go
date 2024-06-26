@@ -28,15 +28,12 @@ type BlueGreen struct {
 	deployment    Deployment
 }
 
-func New(
+func Run(
 	ctx context.Context,
 	logger *logrus.Logger,
 	deployment Deployment,
 	circuitBreaker *circuit_breaker.CircuitBreaker,
-) (*BlueGreen, error) {
-
-	cancelChan := make(chan lib.CancelMessage)
-	workerCtx, cancel := context.WithCancel(ctx)
+) (chan lib.CancelMessage, error) {
 
 	flapsClient, err := flaps.NewWithOptions(context.Background(), flaps.NewClientOpts{
 		Transport: &fly.Transport{
@@ -48,7 +45,6 @@ func New(
 	}
 
 	bg := BlueGreen{
-		cancelChan: cancelChan,
 		// deploymentRequest: req,
 		logger:      logger,
 		flapsClient: flapsClient,
@@ -61,6 +57,8 @@ func New(
 		}),
 	}
 
+	cancelChan := make(chan lib.CancelMessage)
+	workerCtx, cancel := context.WithCancel(ctx)
 	tasks := map[Name]Task{
 		LockApp: {
 			Current:  LockApp,
@@ -76,40 +74,27 @@ func New(
 	}
 
 	bg.tasks = tasks
+	bg.cancelChan = cancelChan
 
-	go bg.RunHeartbeat(workerCtx)
-	go bg.HandleUserCancel(workerCtx, cancelChan, cancel)
-	return &bg, nil
-}
-
-func (bg *BlueGreen) RunHeartbeat(ctx context.Context) error {
-	ticker := time.NewTicker(time.Second * 5)
-
-	for {
+	go func() {
+		ticker := time.NewTicker(time.Second * 5)
+		for {
+			select {
+			case <-workerCtx.Done():
+			case <-ticker.C:
+				// update deployment with heartbeat
+			}
+		}
+	}()
+	go func() {
 		select {
-		case <-ctx.Done():
-			return nil
-		case <-ticker.C:
-			// update deployment with heartbeat
+		case <-workerCtx.Done():
+		case msg := <-cancelChan:
+			if msg.DeploymentID == bg.deployment.ID {
+				cancel()
+			}
 		}
-	}
-}
+	}()
 
-func (bg *BlueGreen) HandleUserCancel(ctx context.Context, cancelChan chan lib.CancelMessage, cancel context.CancelFunc) error {
-
-	select {
-	case <-ctx.Done():
-		return nil
-	case msg := <-cancelChan:
-		if msg.DeploymentID == bg.deployment.ID {
-			cancel()
-		}
-	}
-
-	return nil
-}
-
-func (bg *BlueGreen) Run(ctx context.Context) error {
-
-	return nil
+	return cancelChan, nil
 }

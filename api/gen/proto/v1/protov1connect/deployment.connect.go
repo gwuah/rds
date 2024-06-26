@@ -21,8 +21,8 @@ import (
 const _ = connect.IsAtLeastVersion1_13_0
 
 const (
-	// DeploymentServiceName is the fully-qualified name of the DeploymentService service.
-	DeploymentServiceName = "proto.v1.DeploymentService"
+	// ManagerServiceName is the fully-qualified name of the ManagerService service.
+	ManagerServiceName = "proto.v1.ManagerService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -33,141 +33,141 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// DeploymentServiceCreateDeploymentProcedure is the fully-qualified name of the DeploymentService's
+	// ManagerServiceCreateDeploymentProcedure is the fully-qualified name of the ManagerService's
 	// CreateDeployment RPC.
-	DeploymentServiceCreateDeploymentProcedure = "/proto.v1.DeploymentService/CreateDeployment"
-	// DeploymentServiceGetDeploymentProcedure is the fully-qualified name of the DeploymentService's
+	ManagerServiceCreateDeploymentProcedure = "/proto.v1.ManagerService/CreateDeployment"
+	// ManagerServiceGetDeploymentProcedure is the fully-qualified name of the ManagerService's
 	// GetDeployment RPC.
-	DeploymentServiceGetDeploymentProcedure = "/proto.v1.DeploymentService/GetDeployment"
-	// DeploymentServiceStopDeploymentProcedure is the fully-qualified name of the DeploymentService's
+	ManagerServiceGetDeploymentProcedure = "/proto.v1.ManagerService/GetDeployment"
+	// ManagerServiceStopDeploymentProcedure is the fully-qualified name of the ManagerService's
 	// StopDeployment RPC.
-	DeploymentServiceStopDeploymentProcedure = "/proto.v1.DeploymentService/StopDeployment"
+	ManagerServiceStopDeploymentProcedure = "/proto.v1.ManagerService/StopDeployment"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	deploymentServiceServiceDescriptor                = v1.File_proto_v1_deployment_proto.Services().ByName("DeploymentService")
-	deploymentServiceCreateDeploymentMethodDescriptor = deploymentServiceServiceDescriptor.Methods().ByName("CreateDeployment")
-	deploymentServiceGetDeploymentMethodDescriptor    = deploymentServiceServiceDescriptor.Methods().ByName("GetDeployment")
-	deploymentServiceStopDeploymentMethodDescriptor   = deploymentServiceServiceDescriptor.Methods().ByName("StopDeployment")
+	managerServiceServiceDescriptor                = v1.File_proto_v1_deployment_proto.Services().ByName("ManagerService")
+	managerServiceCreateDeploymentMethodDescriptor = managerServiceServiceDescriptor.Methods().ByName("CreateDeployment")
+	managerServiceGetDeploymentMethodDescriptor    = managerServiceServiceDescriptor.Methods().ByName("GetDeployment")
+	managerServiceStopDeploymentMethodDescriptor   = managerServiceServiceDescriptor.Methods().ByName("StopDeployment")
 )
 
-// DeploymentServiceClient is a client for the proto.v1.DeploymentService service.
-type DeploymentServiceClient interface {
+// ManagerServiceClient is a client for the proto.v1.ManagerService service.
+type ManagerServiceClient interface {
 	CreateDeployment(context.Context, *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error)
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
 	StopDeployment(context.Context, *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error)
 }
 
-// NewDeploymentServiceClient constructs a client for the proto.v1.DeploymentService service. By
-// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
-// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
-// connect.WithGRPC() or connect.WithGRPCWeb() options.
+// NewManagerServiceClient constructs a client for the proto.v1.ManagerService service. By default,
+// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
+// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
+// or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewDeploymentServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) DeploymentServiceClient {
+func NewManagerServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ManagerServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	return &deploymentServiceClient{
+	return &managerServiceClient{
 		createDeployment: connect.NewClient[v1.CreateDeploymentRequest, v1.CreateDeploymentResponse](
 			httpClient,
-			baseURL+DeploymentServiceCreateDeploymentProcedure,
-			connect.WithSchema(deploymentServiceCreateDeploymentMethodDescriptor),
+			baseURL+ManagerServiceCreateDeploymentProcedure,
+			connect.WithSchema(managerServiceCreateDeploymentMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getDeployment: connect.NewClient[v1.GetDeploymentRequest, v1.GetDeploymentResponse](
 			httpClient,
-			baseURL+DeploymentServiceGetDeploymentProcedure,
-			connect.WithSchema(deploymentServiceGetDeploymentMethodDescriptor),
+			baseURL+ManagerServiceGetDeploymentProcedure,
+			connect.WithSchema(managerServiceGetDeploymentMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		stopDeployment: connect.NewClient[v1.StopDeploymentRequest, v1.StopDeploymentResponse](
 			httpClient,
-			baseURL+DeploymentServiceStopDeploymentProcedure,
-			connect.WithSchema(deploymentServiceStopDeploymentMethodDescriptor),
+			baseURL+ManagerServiceStopDeploymentProcedure,
+			connect.WithSchema(managerServiceStopDeploymentMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
-// deploymentServiceClient implements DeploymentServiceClient.
-type deploymentServiceClient struct {
+// managerServiceClient implements ManagerServiceClient.
+type managerServiceClient struct {
 	createDeployment *connect.Client[v1.CreateDeploymentRequest, v1.CreateDeploymentResponse]
 	getDeployment    *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
 	stopDeployment   *connect.Client[v1.StopDeploymentRequest, v1.StopDeploymentResponse]
 }
 
-// CreateDeployment calls proto.v1.DeploymentService.CreateDeployment.
-func (c *deploymentServiceClient) CreateDeployment(ctx context.Context, req *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error) {
+// CreateDeployment calls proto.v1.ManagerService.CreateDeployment.
+func (c *managerServiceClient) CreateDeployment(ctx context.Context, req *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error) {
 	return c.createDeployment.CallUnary(ctx, req)
 }
 
-// GetDeployment calls proto.v1.DeploymentService.GetDeployment.
-func (c *deploymentServiceClient) GetDeployment(ctx context.Context, req *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
+// GetDeployment calls proto.v1.ManagerService.GetDeployment.
+func (c *managerServiceClient) GetDeployment(ctx context.Context, req *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
 	return c.getDeployment.CallUnary(ctx, req)
 }
 
-// StopDeployment calls proto.v1.DeploymentService.StopDeployment.
-func (c *deploymentServiceClient) StopDeployment(ctx context.Context, req *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error) {
+// StopDeployment calls proto.v1.ManagerService.StopDeployment.
+func (c *managerServiceClient) StopDeployment(ctx context.Context, req *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error) {
 	return c.stopDeployment.CallUnary(ctx, req)
 }
 
-// DeploymentServiceHandler is an implementation of the proto.v1.DeploymentService service.
-type DeploymentServiceHandler interface {
+// ManagerServiceHandler is an implementation of the proto.v1.ManagerService service.
+type ManagerServiceHandler interface {
 	CreateDeployment(context.Context, *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error)
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
 	StopDeployment(context.Context, *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error)
 }
 
-// NewDeploymentServiceHandler builds an HTTP handler from the service implementation. It returns
-// the path on which to mount the handler and the handler itself.
+// NewManagerServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewDeploymentServiceHandler(svc DeploymentServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	deploymentServiceCreateDeploymentHandler := connect.NewUnaryHandler(
-		DeploymentServiceCreateDeploymentProcedure,
+func NewManagerServiceHandler(svc ManagerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	managerServiceCreateDeploymentHandler := connect.NewUnaryHandler(
+		ManagerServiceCreateDeploymentProcedure,
 		svc.CreateDeployment,
-		connect.WithSchema(deploymentServiceCreateDeploymentMethodDescriptor),
+		connect.WithSchema(managerServiceCreateDeploymentMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
-	deploymentServiceGetDeploymentHandler := connect.NewUnaryHandler(
-		DeploymentServiceGetDeploymentProcedure,
+	managerServiceGetDeploymentHandler := connect.NewUnaryHandler(
+		ManagerServiceGetDeploymentProcedure,
 		svc.GetDeployment,
-		connect.WithSchema(deploymentServiceGetDeploymentMethodDescriptor),
+		connect.WithSchema(managerServiceGetDeploymentMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
-	deploymentServiceStopDeploymentHandler := connect.NewUnaryHandler(
-		DeploymentServiceStopDeploymentProcedure,
+	managerServiceStopDeploymentHandler := connect.NewUnaryHandler(
+		ManagerServiceStopDeploymentProcedure,
 		svc.StopDeployment,
-		connect.WithSchema(deploymentServiceStopDeploymentMethodDescriptor),
+		connect.WithSchema(managerServiceStopDeploymentMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.v1.DeploymentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.v1.ManagerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case DeploymentServiceCreateDeploymentProcedure:
-			deploymentServiceCreateDeploymentHandler.ServeHTTP(w, r)
-		case DeploymentServiceGetDeploymentProcedure:
-			deploymentServiceGetDeploymentHandler.ServeHTTP(w, r)
-		case DeploymentServiceStopDeploymentProcedure:
-			deploymentServiceStopDeploymentHandler.ServeHTTP(w, r)
+		case ManagerServiceCreateDeploymentProcedure:
+			managerServiceCreateDeploymentHandler.ServeHTTP(w, r)
+		case ManagerServiceGetDeploymentProcedure:
+			managerServiceGetDeploymentHandler.ServeHTTP(w, r)
+		case ManagerServiceStopDeploymentProcedure:
+			managerServiceStopDeploymentHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
 	})
 }
 
-// UnimplementedDeploymentServiceHandler returns CodeUnimplemented from all methods.
-type UnimplementedDeploymentServiceHandler struct{}
+// UnimplementedManagerServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedManagerServiceHandler struct{}
 
-func (UnimplementedDeploymentServiceHandler) CreateDeployment(context.Context, *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.DeploymentService.CreateDeployment is not implemented"))
+func (UnimplementedManagerServiceHandler) CreateDeployment(context.Context, *connect.Request[v1.CreateDeploymentRequest]) (*connect.Response[v1.CreateDeploymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.ManagerService.CreateDeployment is not implemented"))
 }
 
-func (UnimplementedDeploymentServiceHandler) GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.DeploymentService.GetDeployment is not implemented"))
+func (UnimplementedManagerServiceHandler) GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.ManagerService.GetDeployment is not implemented"))
 }
 
-func (UnimplementedDeploymentServiceHandler) StopDeployment(context.Context, *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.DeploymentService.StopDeployment is not implemented"))
+func (UnimplementedManagerServiceHandler) StopDeployment(context.Context, *connect.Request[v1.StopDeploymentRequest]) (*connect.Response[v1.StopDeploymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.v1.ManagerService.StopDeployment is not implemented"))
 }
