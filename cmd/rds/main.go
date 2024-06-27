@@ -97,7 +97,7 @@ func main() {
 		logger.WithError(err).Fatal("failed to setup db connection")
 	}
 
-	circuitBreaker := circuit_breaker.New(http.DefaultTransport, &Hook{})
+	circuitBreaker := circuit_breaker.New(nil, &Hook{})
 	if err != nil {
 		logger.WithError(err).Fatal("failed to setup circuit breaker")
 	}

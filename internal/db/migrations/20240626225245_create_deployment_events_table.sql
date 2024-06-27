@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS deployments (
     state text,
     snapshot text default '{}',
     worker_id text,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME not null DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME not null DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX deployments_app ON deployments (app_id);
 

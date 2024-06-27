@@ -50,12 +50,23 @@ func (db *DB) CreateDeployment(ctx context.Context, deployment Deployment) (*Dep
 	}
 
 	newDeployment := Deployment{}
-	result = db.gorm.First(&newDeployment, deployment.ID)
+	result = db.gorm.Where("id = ?", deployment.ID).First(&newDeployment)
 	if result.Error != nil {
 		return &newDeployment, result.Error
 	}
 
 	return &newDeployment, nil
+}
+
+func (db *DB) GetDeploymentById(ctx context.Context, id string) (*Deployment, error) {
+	deployment := Deployment{}
+
+	result := db.gorm.Where("id = ?", id).First(&deployment)
+	if result.Error != nil {
+		return &deployment, result.Error
+	}
+
+	return &deployment, nil
 }
 
 func (db *DB) GetDeployments(ctx context.Context, appID string) (*[]Deployment, error) {
@@ -67,4 +78,15 @@ func (db *DB) GetDeployments(ctx context.Context, appID string) (*[]Deployment, 
 	}
 
 	return &deployments, nil
+}
+
+func (db *DB) GetDeploymentEvents(ctx context.Context, deploymentID string) (*[]Event, error) {
+	events := []Event{}
+
+	result := db.gorm.Where("deployment_id = ?", deploymentID).Find(&events)
+	if result.Error != nil {
+		return &events, result.Error
+	}
+
+	return &events, nil
 }

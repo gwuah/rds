@@ -4,7 +4,7 @@ BRANCH ?= main
 BUILD_N ?= 0
 
 build:
-	go build -ldflags="-X 'main.Version=1.0.0.$(BUILD_N)-$(BRANCH)'" -o ./bin/rds ./cmd/rds
+	go build --tags json1 -ldflags="-X 'main.Version=1.0.0.$(BUILD_N)-$(BRANCH)'" -o ./bin/rds ./cmd/rds
 
 run: build
 	@DATABASE_URL=${DATABASE_URL} REDIS_URL=${REDIS_URL} SLACK_URL=${SLACK_URL} bin/rds --port 8091 --address 0.0.0.0

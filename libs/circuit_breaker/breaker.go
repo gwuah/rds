@@ -2,6 +2,7 @@ package circuit_breaker
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -48,7 +49,11 @@ func (b *CircuitBreaker) RoundTrip(req *http.Request) (*http.Response, error) {
 		return hr.IncomingResponse, nil
 	}
 
-	resp, err := b.rt.RoundTrip(req)
+	clonedReq := req.Clone(req.Context())
+
+	fmt.Println(clonedReq.Header.Get("Authorization"))
+
+	resp, err := b.rt.RoundTrip(clonedReq)
 	if err != nil {
 		return nil, err
 	}
