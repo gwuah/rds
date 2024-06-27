@@ -77,7 +77,7 @@ func Run(
 	bg.cancelChan = cancelChan
 
 	go func() {
-		ticker := time.NewTicker(time.Second * 5)
+		ticker := time.NewTicker(time.Second * 1)
 		for {
 			select {
 			case <-workerCtx.Done():

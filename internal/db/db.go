@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"embed"
+	"errors"
 
 	"github.com/pressly/goose/v3"
 	"gorm.io/driver/sqlite"
@@ -69,10 +70,32 @@ func (db *DB) GetDeploymentById(ctx context.Context, id string) (*Deployment, er
 	return &deployment, nil
 }
 
-func (db *DB) GetDeployments(ctx context.Context, appID string) (*[]Deployment, error) {
+// func (db *DB) GetDeploymentById(ctx context.Context, id string) (*Deployment, error) {
+// 	deployment := Deployment{}
+
+// 	result := db.gorm.Where("id = ?", id).First(&deployment)
+// 	if result.Error != nil {
+// 		return &deployment, result.Error
+// 	}
+
+// 	return &deployment, nil
+// }
+
+func (db *DB) GetDeploymentsByApp(ctx context.Context, appID string) (*[]Deployment, error) {
 	deployments := []Deployment{}
 
 	result := db.gorm.Where("app_id = ?", appID).Find(&deployments)
+	if result.Error != nil {
+		return &deployments, result.Error
+	}
+
+	return &deployments, nil
+}
+
+func (db *DB) GetDeployments(ctx context.Context, filters []string) (*[]Deployment, error) {
+	deployments := []Deployment{}
+
+	result := db.gorm.Where("status IN ?", filters).Find(&deployments)
 	if result.Error != nil {
 		return &deployments, result.Error
 	}
@@ -89,4 +112,17 @@ func (db *DB) GetDeploymentEvents(ctx context.Context, deploymentID string) (*[]
 	}
 
 	return &events, nil
+}
+
+func (db *DB) UpdateDeployment(ctx context.Context, deployment *Deployment) error {
+	result := db.gorm.Save(&deployment)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 1 {
+		return nil
+	}
+
+	return errors.New("failed to update row")
 }

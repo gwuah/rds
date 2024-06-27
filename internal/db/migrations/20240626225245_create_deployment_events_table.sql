@@ -3,11 +3,13 @@
 CREATE TABLE IF NOT EXISTS deployments (
     id int not null primary key,
     app_id text not null,
+    strategy text not null,
     status text not null default 'pending',
     metadata text not null default '{}',
     state text,
     snapshot text default '{}',
     worker_id text,
+    last_heartbeat integer not NULL default 0,
     created_at DATETIME not null DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME not null DEFAULT CURRENT_TIMESTAMP
 );

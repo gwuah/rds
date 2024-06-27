@@ -16,6 +16,20 @@ import (
 	"github.com/gwuah/rds/libs/circuit_breaker"
 )
 
+type DeploymentStatus string
+
+func (d DeploymentStatus) String() string {
+	return string(d)
+}
+
+const (
+	Pending    DeploymentStatus = "pending"
+	Running    DeploymentStatus = "running"
+	Recovering DeploymentStatus = "recovering"
+	Successful DeploymentStatus = "successful"
+	Failed     DeploymentStatus = "failed"
+)
+
 type Manager struct {
 	circuitBreaker *circuit_breaker.CircuitBreaker
 	logger         *logrus.Logger
@@ -60,7 +74,7 @@ func (m Manager) CreateDeployment(ctx context.Context, req *connect.Request[prot
 	deployment, err := m.db.CreateDeployment(ctx, db.Deployment{
 		ID:     id,
 		AppID:  req.Msg.AppId,
-		Status: "pending",
+		Status: Pending.String(),
 		Metadata: datatypes.NewJSONType(db.DeploymentMetadata{
 			Token: req.Msg.Token,
 		}),
@@ -106,7 +120,27 @@ func (m Manager) GetDeployment(ctx context.Context, req *connect.Request[protov1
 }
 
 func (m Manager) StopDeployment(ctx context.Context, req *connect.Request[protov1.StopDeploymentRequest]) (*connect.Response[protov1.StopDeploymentResponse], error) {
-	m.logger.Info("[StopDeployment]")
+	logger := m.logger.WithFields(logrus.Fields{
+		"method": "StopDeployment",
+	})
+
+	deployment, err := m.db.GetDeploymentById(ctx, req.Msg.Id)
+	if err != nil {
+		logger.WithError(err).Error("failed to get deployment")
+		return nil, err
+	}
+
+	deployment.State = string(Recovering)
+	metadata := deployment.Metadata.Data()
+	metadata.Reason = "cancelled_by_user"
+	deployment.Metadata = deployment.Metadata
+
+	err = m.db.UpdateDeployment(ctx, deployment)
+	if err != nil {
+		logger.WithError(err).Error("failed to update deployment")
+		return nil, err
+	}
+
 	return connect.NewResponse(&protov1.StopDeploymentResponse{}), nil
 }
 
