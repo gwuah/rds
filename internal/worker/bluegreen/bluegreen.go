@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/gwuah/rds/internal/circuit_breaker"
-	"github.com/gwuah/rds/lib"
+	lib "github.com/gwuah/rds/libs"
+	"github.com/gwuah/rds/libs/circuit_breaker"
 
 	"github.com/sirupsen/logrus"
 	fly "github.com/superfly/fly-go"

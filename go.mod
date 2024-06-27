@@ -8,6 +8,7 @@ require (
 	github.com/pressly/goose/v3 v3.21.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
+	github.com/sqids/sqids-go v0.4.1
 	github.com/stretchr/testify v1.9.0
 	github.com/superfly/fly-go v0.1.18
 	go.opentelemetry.io/otel v1.27.0

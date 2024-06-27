@@ -22,6 +22,7 @@ import (
 	"github.com/gwuah/rds/internal/config"
 	"github.com/gwuah/rds/internal/db"
 	"github.com/gwuah/rds/internal/manager"
+	"github.com/gwuah/rds/libs/circuit_breaker"
 )
 
 var (
@@ -59,6 +60,17 @@ func initLogging() *logrus.Logger {
 	return logger
 }
 
+type Hook struct {
+}
+
+func (h *Hook) Before(ctx context.Context, args circuit_breaker.HookInput) (*circuit_breaker.HookOutput, error) {
+	return nil, nil
+}
+
+func (h *Hook) After(ctx context.Context, args circuit_breaker.HookInput) (*circuit_breaker.HookOutput, error) {
+	return nil, nil
+}
+
 func main() {
 	args := os.Args
 	logger := initLogging()
@@ -85,6 +97,11 @@ func main() {
 		logger.WithError(err).Fatal("failed to setup db connection")
 	}
 
+	circuitBreaker := circuit_breaker.New(http.DefaultTransport, &Hook{})
+	if err != nil {
+		logger.WithError(err).Fatal("failed to setup circuit breaker")
+	}
+
 	doneCh := make(chan os.Signal, 1)
 	signal.Notify(doneCh, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 
@@ -101,7 +118,7 @@ func main() {
 	}))
 
 	mux.Handle(protov1connect.NewManagerServiceHandler(
-		manager.New(logger, db),
+		manager.New(logger, db, circuitBreaker),
 	))
 
 	server := &http.Server{

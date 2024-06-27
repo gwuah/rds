@@ -2,14 +2,16 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS deployments (
     id int not null primary key,
+    app_id text not null,
     status text not null default 'pending',
     metadata text not null default '{}',
     state text,
-    snapshot text,
+    snapshot text default '{}',
     worker_id text,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX deployments_app ON deployments (app_id);
 
 CREATE TABLE IF NOT EXISTS events (
     id int not null primary key,

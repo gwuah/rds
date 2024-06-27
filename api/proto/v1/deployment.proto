@@ -5,7 +5,7 @@ import "google/protobuf/struct.proto";
 message CreateDeploymentRequest {
   string token = 1;
   repeated google.protobuf.Struct configs = 2;
-  int64 app_id = 3;
+  string app_id = 3;
   string correlation_id = 4;
 }
 
